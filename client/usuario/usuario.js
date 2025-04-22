@@ -1,6 +1,7 @@
 window.onload = () => {
-    const defaultCoords = [40.4168, -3.7038]; // Madrid centro
+    const defaultCoords = [40.4168, -3.7038];
     const defaultZoom = 13;
+    const apiKey = 'bb1e821a-d37a-4ad9-8e67-d407113bd22a';
 
     const map = L.map('map').setView(defaultCoords, defaultZoom);
 
@@ -9,27 +10,53 @@ window.onload = () => {
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Geolocalización
+    function cargarCargadores(lat, lon) {
+        const url = `https://api.openchargemap.io/v3/poi/?output=json&countrycode=ES&latitude=${lat}&longitude=${lon}&distance=10&maxresults=20&compact=true&verbose=false&key=${apiKey}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(cargador => {
+                    const coords = [
+                        cargador.AddressInfo.Latitude,
+                        cargador.AddressInfo.Longitude
+                    ];
+
+                    const title = cargador.AddressInfo.Title || 'Cargador sin nombre';
+                    const address = cargador.AddressInfo.AddressLine1 || 'Sin dirección';
+
+                    L.marker(coords)
+                        .addTo(map)
+                        .bindPopup(`<strong>${title}</strong><br>${address}`);
+                });
+            })
+            .catch(err => {
+                console.error("Error al cargar cargadores:", err);
+            });
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
                 const userCoords = [latitude, longitude];
 
-                // Centrar el mapa en la ubicación del usuario
-                map.setView(userCoords, 15);
+                map.setView(userCoords, 14);
 
-                // Añadir marcador
                 L.marker(userCoords)
                     .addTo(map)
                     .bindPopup("Estás aquí 🔍")
                     .openPopup();
+
+                cargarCargadores(latitude, longitude);
             },
-            (err) => {
-                console.warn("No se pudo obtener tu ubicación. Usando Madrid por defecto.");
+            () => {
+                console.warn("Ubicación denegada, usando Madrid por defecto.");
+                cargarCargadores(defaultCoords[0], defaultCoords[1]);
             }
         );
     } else {
-        console.warn("Tu navegador no soporta geolocalización.");
+        console.warn("Navegador no soporta geolocalización.");
+        cargarCargadores(defaultCoords[0], defaultCoords[1]);
     }
 };
