@@ -14,6 +14,7 @@ app.use('/usuario', express.static(path.join(__dirname, 'client/usuario')));
 app.use('/tecnico', express.static(path.join(__dirname, 'client/tecnico')));
 app.use('/admin', express.static(path.join(__dirname, 'client/admin')));
 
+
 // Ruta del archivo que simula la base de datos
 const USERS_FILE = path.join(__dirname, 'data/users.json');
 
