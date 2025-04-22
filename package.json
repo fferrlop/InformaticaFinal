@@ -10,5 +10,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fferrlop/InformaticaFinal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fferrlop/InformaticaFinal/issues"
+  },
+  "homepage": "https://github.com/fferrlop/InformaticaFinal#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
