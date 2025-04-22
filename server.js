@@ -5,15 +5,16 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+// Middleware para leer JSON del body
 app.use(express.json());
 
-// Rutas estáticas para frontend por rol
+// Rutas estáticas para cada vista según el rol
 app.use('/login', express.static(path.join(__dirname, 'client/login')));
 app.use('/usuario', express.static(path.join(__dirname, 'client/usuario')));
 app.use('/tecnico', express.static(path.join(__dirname, 'client/tecnico')));
 app.use('/admin', express.static(path.join(__dirname, 'client/admin')));
 
-// Ruta del archivo de usuarios
+// Ruta del archivo que simula la base de datos
 const USERS_FILE = path.join(__dirname, 'data/users.json');
 
 // Función para leer usuarios
@@ -27,7 +28,7 @@ function saveUsers(users) {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
-// LOGIN
+// Ruta para iniciar sesión
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const users = getUsers();
@@ -36,26 +37,26 @@ app.post('/login', (req, res) => {
     if (user) {
         res.json({ success: true, role: user.role });
     } else {
-        res.json({ success: false, message: "Usuario o contraseña incorrectos." });
+        res.json({ success: false, message: 'Usuario o contraseña incorrectos.' });
     }
 });
 
-// REGISTRO (solo usuarios normales)
+// Ruta para registrar un nuevo usuario
 app.post('/register', (req, res) => {
     const { username, password, nombre, apellido } = req.body;
     const users = getUsers();
 
-    // Validar que no exista ya
+    // Validar que no exista el mismo usuario
     if (users.find(u => u.username === username)) {
-        return res.json({ success: false, message: "Nombre de usuario ya existe." });
+        return res.json({ success: false, message: 'Nombre de usuario ya existe.' });
     }
 
-    // Impedir creación de admins o técnicos
+    // Impedir creación de usuarios con nombres sospechosos
     if (username.toLowerCase().includes('admin') || username.toLowerCase().includes('tecnico')) {
-        return res.json({ success: false, message: "No tienes permisos para crear ese tipo de usuario." });
+        return res.json({ success: false, message: 'No tienes permisos para crear ese tipo de usuario.' });
     }
 
-    // Crear usuario normal
+    // Crear usuario con rol por defecto
     const role = 'usuario';
     users.push({ username, password, nombre, apellido, role });
     saveUsers(users);
@@ -64,5 +65,5 @@ app.post('/register', (req, res) => {
 
 // Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}/login/login.html`);
+    console.log(`✅ Servidor corriendo en: http://localhost:${PORT}/login/login.html`);
 });
