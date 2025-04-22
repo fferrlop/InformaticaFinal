@@ -5,7 +5,7 @@ document.getElementById('register-btn').addEventListener('click', () => {
     document.getElementById('form-title').textContent = 'Crear usuario';
     document.getElementById('extra-fields').style.display = 'block';
     document.getElementById('confirm-password').style.display = 'block';
-    document.getElementById('submit-btn').textContent = 'Registrarse';
+    document.getElementById('submit-btn').textContent = 'Continuar';
 });
 
 document.getElementById('login-btn').addEventListener('click', () => {
@@ -13,7 +13,7 @@ document.getElementById('login-btn').addEventListener('click', () => {
     document.getElementById('form-title').textContent = 'Iniciar sesión';
     document.getElementById('extra-fields').style.display = 'none';
     document.getElementById('confirm-password').style.display = 'none';
-    document.getElementById('submit-btn').textContent = 'Iniciar sesión';
+    document.getElementById('submit-btn').textContent = 'Continuar';
 });
 
 document.getElementById('login-form').addEventListener('submit', async (e) => {
