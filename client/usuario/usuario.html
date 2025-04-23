@@ -9,6 +9,8 @@
 <body>
 <h1>Bienvenido, Usuario</h1>
 
+
+
 <!-- Sidebar filtros -->
 <div id="sidebar">
     <h3>Filtrar por potencia</h3>
@@ -24,12 +26,12 @@
 <div class="perfil-container">
     <div class="perfil-icon" id="perfilIcon">👤</div>
     <div class="perfil-menu" id="perfilMenu">
-        <button id="gestionarBtn">Gestionar reservas</button>
+        <button id="gestionBtn">Gestionar reservas</button>
         <button id="logoutBtn">Cerrar sesión</button>
     </div>
 </div>
 
-<!-- Modal Reserva -->
+<!-- Modal Reservar -->
 <div id="reservaModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
@@ -38,34 +40,33 @@
         <p id="modal-info">Detalles aquí...</p>
 
         <label for="fechaReserva"><strong>Fecha:</strong></label>
-        <input type="date" id="fechaReserva" style="width: 100%; margin: 8px 0;" />
+        <input type="date" id="fechaReserva" />
 
         <label for="horaReserva"><strong>Hora:</strong></label>
-        <input type="time" id="horaReserva" style="width: 100%; margin: 8px 0;" />
+        <input type="time" id="horaReserva" />
 
         <label for="minutosReserva"><strong>Duración (minutos):</strong></label>
-        <input type="number" id="minutosReserva" placeholder="Ej: 30" min="1" style="width: 100%; margin: 8px 0;" />
+        <input type="number" id="minutosReserva" min="1" max="240" placeholder="Ej: 30" />
 
         <button id="reservarBtn">Reservar cargador</button>
     </div>
 </div>
 
-<!-- Modal de Gestión de Reservas -->
+<!-- Modal Gestionar Reservas -->
 <div id="gestionModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeGestionModal">&times;</span>
-        <h2>Tus reservas activas</h2>
-        <div id="listaReservas">
-            <!-- Se llena con JS -->
-        </div>
+        <h2>Tus reservas</h2>
+        <div id="listaReservas">Cargando reservas...</div>
     </div>
 </div>
 
-<!-- Modal Modificar -->
+<!-- Modal Modificar Reserva -->
 <div id="modalModificar" class="modal">
     <div class="modal-content">
         <span class="close" id="closeModalModificar">&times;</span>
         <h2>Modificar Reserva</h2>
+
         <label for="modFecha"><strong>Fecha:</strong></label>
         <input type="date" id="modFecha" />
 
@@ -78,7 +79,6 @@
         <button id="guardarCambiosBtn">Guardar cambios</button>
     </div>
 </div>
-
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="usuario.js"></script>

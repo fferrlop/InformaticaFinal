@@ -2,38 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Encuentra tu cargador</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="admin.css">
+    <title>Panel Admin</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-<h1>Bienvenido, Admin</h1>
 
+<!-- Header con perfil -->
+<div class="header">
+    <div class="logo">EVCharge Admin</div>
+    <div class="perfil-container">
+        <div id="perfilIcon" class="perfil-icon">👤</div>
+        <div id="perfilMenu" class="perfil-menu">
+            <button id="logoutBtn">Cerrar sesión</button>
+        </div>
+    </div>
+</div>
+
+<!-- Mapa -->
 <div id="map"></div>
 
-<!-- MODAL INFO CARGADOR -->
-<div id="reservaModal" class="modal">
+<!-- Modal cargador -->
+<div id="reservaModal">
     <div class="modal-content">
-        <span id="closeModal" class="close">&times;</span>
-        <h2 id="modal-title">Título del cargador</h2>
-        <p id="modal-address">Dirección del cargador</p>
-        <p id="modal-info">Detalles técnicos u observaciones</p>
+        <span id="closeModal">&times;</span>
+        <h3 id="modal-title"></h3>
+        <p id="modal-address"></p>
+        <div id="modal-info"></div>
     </div>
 </div>
 
-<!-- Perfil -->
-<div class="perfil-container">
-    <div class="perfil-icon" id="perfilIcon">👤</div>
-    <div class="perfil-menu" id="perfilMenu">
-        <button id="logoutBtn">Cerrar sesión</button>
+<!-- Panel administración -->
+<div class="admin-section">
+    <div class="admin-box">
+        <h2>Estadísticas</h2>
+        <div id="estadisticas"></div>
+    </div>
+
+    <div class="admin-box">
+        <h2>Gestión de Cargadores</h2>
+        <div id="gestion-cargadores"></div>
+    </div>
+
+    <div class="admin-box">
+        <h2>Gestión de Usuarios</h2>
+        <div id="gestion-usuarios"></div>
+    </div>
+
+    <div class="admin-box">
+        <h2>Logs de Auditoría</h2>
+        <div id="logs-auditoria"></div>
     </div>
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

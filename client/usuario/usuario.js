@@ -60,6 +60,7 @@ window.onload = () => {
     }
 
     function mostrarCargadores(data) {
+
         marcadores.forEach(m => map.removeLayer(m));
         marcadores = [];
 
@@ -237,7 +238,7 @@ window.onload = () => {
     });
 };
 
-document.getElementById('gestionarBtn').onclick = async () => {
+document.getElementById('gestionBtn').onclick = async () => {
     const usuario = localStorage.getItem('usuario');
     const listaDiv = document.getElementById('listaReservas');
     listaDiv.innerHTML = '';
@@ -360,4 +361,32 @@ document.getElementById('guardarCambiosBtn').onclick = async () => {
     document.getElementById('modalModificar').style.display = 'none';
     document.getElementById('gestionModal').style.display = 'none';
     location.reload();
+
+
+
+    document.getElementById('buscadorCargador').addEventListener('input', (e) => {
+        const texto = e.target.value.toLowerCase().trim();
+        if (!texto) return;
+
+        const resultado = marcadores.find((m, i) => {
+            const cargador = data[i]; // usamos el mismo índice
+            const id = cargador.ID.toString();
+            const nombre = (cargador.AddressInfo.Title || '').toLowerCase();
+            return id.includes(texto) || nombre.includes(texto);
+        });
+
+        if (resultado) {
+            resultado.openPopup(); // por si quieres mostrar algo
+            resultado.setIcon(L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }));
+            map.setView(resultado.getLatLng(), 16);
+        }
+    });
+
+
+
+
+
+
 };
+
+

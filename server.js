@@ -13,8 +13,11 @@ app.use('/usuario', express.static(path.join(__dirname, 'client/usuario')));
 app.use('/tecnico', express.static(path.join(__dirname, 'client/tecnico')));
 app.use('/admin', express.static(path.join(__dirname, 'client/admin')));
 
-// ──────────────── Autenticación ────────────────
+// ──────────────── Archivos y funciones base ────────────────
 const USERS_FILE = path.join(__dirname, 'data/users.json');
+const ESTADOS_FILE = path.join(__dirname, 'data/estados.json');
+const ESTADO_TECNICO_FILE = path.join(__dirname, 'data/estadoTecnico.json');
+const LOGS_FILE = path.join(__dirname, 'data/logs.json');
 
 function getUsers() {
     if (!fs.existsSync(USERS_FILE)) return [];
@@ -25,6 +28,35 @@ function saveUsers(users) {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
+function leerEstados() {
+    if (!fs.existsSync(ESTADOS_FILE)) return [];
+    return JSON.parse(fs.readFileSync(ESTADOS_FILE));
+}
+
+function guardarEstados(estados) {
+    fs.writeFileSync(ESTADOS_FILE, JSON.stringify(estados, null, 2));
+}
+
+function leerEstadoTecnico() {
+    if (!fs.existsSync(ESTADO_TECNICO_FILE)) return [];
+    return JSON.parse(fs.readFileSync(ESTADO_TECNICO_FILE));
+}
+
+function guardarEstadoTecnico(estados) {
+    fs.writeFileSync(ESTADO_TECNICO_FILE, JSON.stringify(estados, null, 2));
+}
+
+function leerLogs() {
+    return fs.existsSync(LOGS_FILE) ? JSON.parse(fs.readFileSync(LOGS_FILE)) : [];
+}
+
+function agregarLog(evento) {
+    const logs = leerLogs();
+    logs.push({ fecha: new Date().toISOString(), evento });
+    fs.writeFileSync(LOGS_FILE, JSON.stringify(logs, null, 2));
+}
+
+// ──────────────── Autenticación ────────────────
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
     const users = getUsers();
@@ -50,21 +82,11 @@ app.post('/register', (req, res) => {
 
     users.push({ username, password, nombre, apellido, role: 'usuario' });
     saveUsers(users);
+    agregarLog(`Nuevo usuario registrado: ${username}`);
     res.json({ success: true, role: 'usuario' });
 });
 
 // ──────────────── Reservas ────────────────
-const ESTADOS_FILE = path.join(__dirname, 'data/estados.json');
-
-function leerEstados() {
-    if (!fs.existsSync(ESTADOS_FILE)) return [];
-    return JSON.parse(fs.readFileSync(ESTADOS_FILE));
-}
-
-function guardarEstados(estados) {
-    fs.writeFileSync(ESTADOS_FILE, JSON.stringify(estados, null, 2));
-}
-
 function parseDateTime(fecha, hora) {
     return new Date(`${fecha}T${hora}`);
 }
@@ -72,7 +94,6 @@ function parseDateTime(fecha, hora) {
 app.post('/api/reservar', (req, res) => {
     const { idCargador, usuario, fecha, hora, minutos } = req.body;
 
-    // Validación básica
     if (!idCargador || !usuario || !fecha || !hora || !minutos) {
         return res.json({ success: false, message: "Todos los campos son obligatorios." });
     }
@@ -107,9 +128,9 @@ app.post('/api/reservar', (req, res) => {
 
     estados.push({ idCargador, estado: "Ocupado", usuario, fecha, hora, minutos: duracion });
     guardarEstados(estados);
+    agregarLog(`Reserva realizada por ${usuario} en cargador ${idCargador}`);
     res.json({ success: true, message: "Reserva realizada correctamente." });
 });
-
 
 app.post('/api/cancelar', (req, res) => {
     const { idCargador, usuario } = req.body;
@@ -124,6 +145,7 @@ app.post('/api/cancelar', (req, res) => {
     }
 
     guardarEstados(estados);
+    agregarLog(`Reserva cancelada por ${usuario} en cargador ${idCargador}`);
     res.json({ success: true, message: "Reserva cancelada correctamente." });
 });
 
@@ -132,17 +154,6 @@ app.get('/api/estados', (req, res) => {
 });
 
 // ──────────────── Estado Técnico ────────────────
-const ESTADO_TECNICO_FILE = path.join(__dirname, 'data/estadoTecnico.json');
-
-function leerEstadoTecnico() {
-    if (!fs.existsSync(ESTADO_TECNICO_FILE)) return [];
-    return JSON.parse(fs.readFileSync(ESTADO_TECNICO_FILE));
-}
-
-function guardarEstadoTecnico(estados) {
-    fs.writeFileSync(ESTADO_TECNICO_FILE, JSON.stringify(estados, null, 2));
-}
-
 app.get('/api/estado-tecnico', (req, res) => {
     res.json(leerEstadoTecnico());
 });
@@ -163,7 +174,69 @@ app.post('/api/estado-tecnico', (req, res) => {
     }
 
     guardarEstadoTecnico(estados);
+    agregarLog(`Estado técnico de ${idCargador} actualizado a ${estadoTecnico}`);
     res.json({ success: true });
+});
+
+// ──────────────── Gestión de Usuarios (Admin) ────────────────
+app.get('/api/users', (req, res) => {
+    const users = getUsers().map(({ password, ...rest }) => rest);
+    res.json(users);
+});
+
+app.delete('/api/users/:username', (req, res) => {
+    const username = req.params.username;
+    let users = getUsers();
+
+    if (!users.find(u => u.username === username)) {
+        return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    users = users.filter(u => u.username !== username);
+    saveUsers(users);
+    agregarLog(`Usuario eliminado: ${username}`);
+    res.json({ success: true });
+});
+
+app.put('/api/users/:username', (req, res) => {
+    const username = req.params.username;
+    const { nombre, apellido } = req.body;
+    let users = getUsers();
+    const userIndex = users.findIndex(u => u.username === username);
+
+    if (userIndex === -1) {
+        return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    users[userIndex].nombre = nombre || users[userIndex].nombre;
+    users[userIndex].apellido = apellido || users[userIndex].apellido;
+
+    saveUsers(users);
+    agregarLog(`Usuario editado: ${username}`);
+    res.json({ success: true });
+});
+
+// ──────────────── Logs ────────────────
+app.get('/api/logs', (req, res) => {
+    res.json(leerLogs());
+});
+
+// ──────────────── Incidencias ────────────────
+app.post('/api/incidencia', (req, res) => {
+    const nuevaIncidencia = req.body;
+    const filePath = path.join(__dirname, 'data', 'incidencias.json');
+
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) return res.status(500).json({ message: 'Error al leer incidencias' });
+
+        const incidencias = JSON.parse(data);
+        incidencias.push(nuevaIncidencia);
+
+        fs.writeFile(filePath, JSON.stringify(incidencias, null, 2), (err) => {
+            if (err) return res.status(500).json({ message: 'Error al guardar incidencia' });
+            res.json({ message: 'Incidencia reportada correctamente' });
+        });
+    });
 });
 
 // ──────────────── Iniciar servidor ────────────────

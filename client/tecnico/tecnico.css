@@ -11,14 +11,22 @@ h1 {
     color: white;
     margin: 0;
     padding: 20px;
-}
-
-#map {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 90vh;
+    z-index: 3000;
 }
 
-/* Modal estilo usuario */
+/* Mapa */
+#map {
+    width: calc(100% - 200px);
+    height: calc(100vh - 65px);
+    margin-left: 200px;
+    margin-top: 65px;
+}
+
+/* Modal General */
 .modal-content {
     display: none;
     position: fixed;
@@ -34,7 +42,6 @@ h1 {
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
     text-align: left;
 }
-
 
 .modal-content h2, .modal-content h3 {
     margin-top: 0;
@@ -81,19 +88,56 @@ h1 {
     color: #555;
 }
 
-#actualizarEstadoBtn {
+#modalHistorialUsuario button {
+    margin: 5px;
+    padding: 6px 12px;
     background-color: #007BFF;
-    color: white;
-    padding: 10px;
     border: none;
+    color: white;
     border-radius: 4px;
     cursor: pointer;
-    width: 100%;
-    margin-top: 15px;
 }
 
-#actualizarEstadoBtn:hover {
+#modalHistorialUsuario button:hover {
     background-color: #0056b3;
+}
+
+
+/* Sidebar Usuarios */
+#sidebarUsuarios {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 200px;
+    height: calc(100vh - 65px);
+    background: #007BFF;
+    color: white;
+    padding: 15px;
+    overflow-y: auto;
+    z-index: 2500;
+}
+
+#sidebarUsuarios h3 {
+    margin-top: 0;
+    border-bottom: 1px solid white;
+    padding-bottom: 8px;
+}
+
+#sidebarUsuarios ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebarUsuarios li {
+    margin: 8px 0;
+    cursor: pointer;
+    padding: 4px 6px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+#sidebarUsuarios li:hover {
+    background-color: rgba(255,255,255,0.3);
 }
 
 /* Perfil */
@@ -101,8 +145,9 @@ h1 {
     position: fixed;
     top: 15px;
     right: 20px;
-    z-index: 2000;
+    z-index: 4000;
 }
+
 
 .perfil-icon {
     width: 40px;
@@ -144,3 +189,8 @@ h1 {
 .perfil-menu button:hover {
     background-color: #f0f0f0;
 }
+
+#modalIncidencias {
+    z-index: 1100;
+}
+

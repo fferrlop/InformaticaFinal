@@ -19,12 +19,5 @@
     "nombre": "Fran",
     "apellido": "Ferrer",
     "role": "usuario"
-  },
-  {
-    "username": "Francisferr",
-    "password": "123",
-    "nombre": "Fran",
-    "apellido": "Ferrer",
-    "role": "usuario"
   }
 ]

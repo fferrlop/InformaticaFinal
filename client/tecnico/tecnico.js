@@ -101,18 +101,39 @@ window.onload = () => {
         location.reload();
     };
 
-    window.reportarIncidencia = () => {
-        if (!cargadorSeleccionado) return;
+    window.reportarIncidencia = async () => {
+        const descripcion = document.getElementById('reporte').value.trim();
 
-        const descripcion = document.getElementById("reporte").value.trim();
-        if (!descripcion) {
-            alert("Por favor describe la incidencia.");
+        if (!descripcion || !cargadorSeleccionado || !cargadorSeleccionado.ID) {
+            alert("Por favor, selecciona un cargador válido y escribe una descripción.");
             return;
         }
 
-        alert(`Incidencia reportada para cargador ${cargadorSeleccionado.ID}:\n${descripcion}`);
-        document.getElementById("reporte").value = "";
+        const incidencia = {
+            idCargador: cargadorSeleccionado.ID,
+            descripcion: descripcion,
+            usuario: localStorage.getItem('usuario') || 'Desconocido',
+            fecha: new Date().toISOString()
+        };
+
+        const res = await fetch('/api/incidencia', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(incidencia)
+        });
+
+        const data = await res.json();
+        alert(data.message || 'Incidencia enviada.');
+
+        document.getElementById('reporte').value = "";
+        document.getElementById('panel-detalles').style.display = 'none';
     };
+
+
+
+
 
     // Perfil
     const perfilIcon = document.getElementById("perfilIcon");
@@ -144,4 +165,73 @@ window.onload = () => {
     } else {
         cargarCargadores(defaultCoords[0], defaultCoords[1]);
     }
+
+
+    // Cargar lista de usuarios
+    async function cargarUsuarios() {
+        const res = await fetch('/api/users');
+        const usuarios = await res.json();
+        const lista = document.getElementById('listaUsuarios');
+        lista.innerHTML = '';
+
+        usuarios.forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = user.username;
+            li.onclick = () => mostrarHistorialUsuario(user.username);
+            lista.appendChild(li);
+        });
+    }
+
+
+
+    async function mostrarHistorialUsuario(username) {
+        const res = await fetch('/api/estados');
+        const reservas = await res.json();
+        const historial = reservas.filter(r => r.usuario === username);
+
+        const contenedor = document.getElementById('contenidoHistorialUsuario');
+        if (historial.length === 0) {
+            contenedor.innerHTML = `<p>No hay reservas para ${username}</p>`;
+        } else {
+            contenedor.innerHTML = historial.map(r =>
+                `<p><strong>Cargador:</strong> ${r.idCargador}<br>
+             <strong>Fecha:</strong> ${r.fecha}<br>
+             <strong>Hora:</strong> ${r.hora}<br>
+             <strong>Duración:</strong> ${r.minutos} min</p><hr>`
+            ).join('');
+        }
+
+        document.getElementById('modalHistorialUsuario').style.display = 'block';
+    }
+
+    cargarUsuarios();
+
+
+
+
+    document.getElementById('verIncidenciasBtn').onclick = async () => {
+        const res = await fetch('/api/incidencias');
+        const incidencias = await res.json();
+
+        const contenedor = document.getElementById('contenidoIncidencias');
+
+        if (incidencias.length === 0) {
+            contenedor.innerHTML = '<p>No hay incidencias registradas.</p>';
+        } else {
+            contenedor.innerHTML = incidencias.map(i =>
+                `<p><strong>Cargador:</strong> ${i.idCargador}<br>
+             <strong>Usuario:</strong> ${i.usuario}<br>
+             <strong>Descripción:</strong> ${i.descripcion}<br>
+             <em>${new Date(i.timestamp).toLocaleString()}</em></p><hr>`
+            ).join('');
+        }
+
+        document.getElementById('modalIncidencias').style.display = 'block';
+    };
+
+
+
+
+
+
 };

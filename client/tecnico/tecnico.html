@@ -9,10 +9,17 @@
 <body>
 <h1>Bienvenido, Técnico</h1>
 
+<!-- Sidebar de Usuarios -->
+<div id="sidebarUsuarios">
+    <h3>Usuarios</h3>
+    <ul id="listaUsuarios"></ul>
+</div>
+
 <!-- Icono Perfil -->
 <div class="perfil-container">
     <div class="perfil-icon" id="perfilIcon">👤</div>
     <div class="perfil-menu" id="perfilMenu">
+        <button id="verIncidenciasBtn">Ver incidencias</button>
         <button id="logoutBtn">Cerrar sesión</button>
     </div>
 </div>
@@ -20,7 +27,7 @@
 <!-- Mapa -->
 <div id="map"></div>
 
-<!-- Modal Detalles -->
+<!-- Modal Detalles del Cargador -->
 <div id="panel-detalles" class="modal-content">
     <span class="close" onclick="document.getElementById('panel-detalles').style.display='none'">&times;</span>
     <h2>Detalles del Cargador</h2>
@@ -42,7 +49,21 @@
     <button onclick="reportarIncidencia()">Enviar Reporte</button>
 </div>
 
-<!-- Scripts -->
+<!-- Modal Historial del Usuario -->
+<div id="modalHistorialUsuario" class="modal-content">
+    <span class="close" onclick="document.getElementById('modalHistorialUsuario').style.display='none'">&times;</span>
+    <h2>Historial de Reservas</h2>
+    <div id="contenidoHistorialUsuario">Cargando...</div>
+</div>
+
+<!-- Modal Incidencias Reportadas -->
+<div id="modalIncidencias" class="modal-content">
+    <span class="close" onclick="document.getElementById('modalIncidencias').style.display='none'">&times;</span>
+    <h2>Incidencias Reportadas</h2>
+    <div id="contenidoIncidencias">Cargando...</div>
+</div>
+
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="tecnico.js"></script>
 </body>
