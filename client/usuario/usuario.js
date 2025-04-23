@@ -4,30 +4,38 @@ window.onload = () => {
     const apiKey = 'bb1e821a-d37a-4ad9-8e67-d407113bd22a';
     const usuario = localStorage.getItem('usuario');
     let cargadorSeleccionadoId = null;
-    let estados = [];
+    let estadosCargadores = [];
+    let estadosTecnicos = [];
 
     const map = L.map('map').setView(defaultCoords, defaultZoom);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    async function obtenerEstados() {
-        const res = await fetch('/api/estados');
-        estados = await res.json();
+    async function obtenerDatos() {
+        const resEstados = await fetch('/api/estados');
+        estadosCargadores = await resEstados.json();
+
+        const resTecnico = await fetch('/api/estado-tecnico');
+        estadosTecnicos = await resTecnico.json();
     }
 
-    function getEstadoCargador(id) {
-        const estado = estados.find(e => e.idCargador === id);
-        return {
-            tecnico: estado?.estadoTecnico || 'Activo',
-            uso: estado?.estado === 'Ocupado' ? 'Ocupado' : 'Libre',
-            reservadoPor: estado?.usuario || null
-        };
+    function obtenerEstadoCargador(id) {
+        const estadoObj = estadosCargadores.find(e => e.idCargador === id);
+        if (estadoObj) {
+            return { estado: estadoObj.estado, reservadoPorUsuario: estadoObj.usuario };
+        }
+        return { estado: 'Libre', reservadoPorUsuario: null };
+    }
+
+    function obtenerEstadoTecnico(id) {
+        const estado = estadosTecnicos.find(e => e.idCargador === id);
+        return estado?.estadoTecnico || 'Activo';
     }
 
     async function cargarCargadores(lat, lon) {
-        await obtenerEstados();
+        await obtenerDatos();
+
         const url = `https://api.openchargemap.io/v3/poi/?output=json&countrycode=ES&latitude=${lat}&longitude=${lon}&distance=10&maxresults=20&compact=true&verbose=false&key=${apiKey}`;
         const response = await fetch(url);
         const data = await response.json();
@@ -35,10 +43,12 @@ window.onload = () => {
         data.forEach(cargador => {
             const coords = [cargador.AddressInfo.Latitude, cargador.AddressInfo.Longitude];
             const id = cargador.ID;
-            const info = getEstadoCargador(id);
-            const title = cargador.AddressInfo.Title || 'Cargador';
+            const title = cargador.AddressInfo.Title || 'Cargador sin nombre';
             const address = cargador.AddressInfo.AddressLine1 || 'Sin dirección';
             const tipo = cargador.Connections?.[0]?.ConnectionType?.Title || 'No especificado';
+
+            const estadoInfo = obtenerEstadoCargador(id);
+            const estadoTecnico = obtenerEstadoTecnico(id);
 
             const marker = L.marker(coords).addTo(map);
             marker.on('click', () => {
@@ -48,19 +58,22 @@ window.onload = () => {
                 document.getElementById('modal-address').textContent = address;
                 document.getElementById('modal-info').innerHTML = `
                     <strong>Tipo:</strong> ${tipo}<br>
-                    <strong>Estado:</strong> ${info.uso}<br>
-                    <strong>Técnico:</strong> ${info.tecnico}
+                    <strong>Estado:</strong> ${estadoInfo.estado}<br>
+                    <strong>Estado técnico:</strong> ${estadoTecnico}
                 `;
 
-                const btn = document.getElementById('reservarBtn');
+                const boton = document.getElementById('reservarBtn');
 
-                if (info.tecnico !== 'Activo') {
-                    btn.style.display = 'none';
+                if (estadoTecnico !== 'Activo') {
+                    boton.style.display = 'none';
                 } else {
-                    btn.style.display = 'block';
-                    btn.textContent = (info.uso === 'Ocupado' && info.reservadoPor === usuario)
-                        ? 'Cancelar reserva'
-                        : (info.uso === 'Libre' ? 'Reservar cargador' : 'No disponible');
+                    boton.style.display =
+                        (estadoInfo.estado === 'Libre') ? 'block' :
+                            (estadoInfo.estado === 'Ocupado' && estadoInfo.reservadoPorUsuario === usuario) ? 'block' : 'none';
+
+                    boton.textContent =
+                        (estadoInfo.estado === 'Ocupado' && estadoInfo.reservadoPorUsuario === usuario)
+                            ? 'Cancelar reserva' : 'Reservar cargador';
                 }
 
                 document.getElementById('reservaModal').style.display = 'block';
@@ -70,16 +83,37 @@ window.onload = () => {
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                map.setView([pos.coords.latitude, pos.coords.longitude], 14);
-                L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map).bindPopup("Estás aquí 🔍").openPopup();
-                cargarCargadores(pos.coords.latitude, pos.coords.longitude);
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                map.setView([latitude, longitude], 14);
+                L.marker([latitude, longitude]).addTo(map).bindPopup("Estás aquí 🔍").openPopup();
+                cargarCargadores(latitude, longitude);
             },
             () => cargarCargadores(defaultCoords[0], defaultCoords[1])
         );
     } else {
         cargarCargadores(defaultCoords[0], defaultCoords[1]);
     }
+
+    document.getElementById('reservarBtn').onclick = async () => {
+        if (!cargadorSeleccionadoId) return;
+
+        const estadoActual = obtenerEstadoCargador(cargadorSeleccionadoId);
+        const ruta = (estadoActual.estado === 'Ocupado' && estadoActual.reservadoPorUsuario === usuario)
+            ? '/api/cancelar'
+            : '/api/reservar';
+
+        const response = await fetch(ruta, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idCargador: cargadorSeleccionadoId, usuario })
+        });
+
+        const data = await response.json();
+        alert(data.message || (ruta === '/api/cancelar' ? 'Reserva cancelada' : 'Reserva realizada'));
+        document.getElementById('reservaModal').style.display = 'none';
+        location.reload();
+    };
 
     document.getElementById('closeModal').onclick = () => {
         document.getElementById('reservaModal').style.display = 'none';
@@ -90,40 +124,17 @@ window.onload = () => {
         }
     };
 
-    document.getElementById('reservarBtn').onclick = async () => {
-        if (!cargadorSeleccionadoId) return;
-
-        const estado = getEstadoCargador(cargadorSeleccionadoId);
-        const endpoint = (estado.uso === 'Ocupado' && estado.reservadoPor === usuario)
-            ? '/api/cancelar'
-            : '/api/reservar';
-
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idCargador: cargadorSeleccionadoId, usuario })
-        });
-
-        const data = await response.json();
-        alert(data.message || 'Acción completada.');
-        document.getElementById('reservaModal').style.display = 'none';
-        location.reload();
-    };
-
-    document.getElementById('perfilIcon')?.addEventListener('click', (e) => {
+    const perfilIcon = document.getElementById('perfilIcon');
+    const perfilMenu = document.getElementById('perfilMenu');
+    perfilIcon.addEventListener('click', (e) => {
         e.stopPropagation();
-        const menu = document.getElementById('perfilMenu');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        perfilMenu.style.display = perfilMenu.style.display === 'block' ? 'none' : 'block';
     });
-
     document.addEventListener('click', (e) => {
-        const menu = document.getElementById('perfilMenu');
-        const icon = document.getElementById('perfilIcon');
-        if (!menu.contains(e.target) && e.target !== icon) {
-            menu.style.display = 'none';
+        if (!perfilMenu.contains(e.target) && e.target !== perfilIcon) {
+            perfilMenu.style.display = 'none';
         }
     });
-
     document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.removeItem('usuario');
         window.location.href = '/login/login.html';
