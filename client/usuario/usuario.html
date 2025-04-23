@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Usuario - Encuentra tu cargador</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="usuario.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <meta charset="UTF-8" />
+    <title>Panel de Usuario</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="usuario.css" />
 </head>
 <body>
-
 <h1>Bienvenido, Usuario</h1>
 
-<!-- FILTROS -->
-<aside id="sidebar">
+<!-- Sidebar filtros -->
+<div id="sidebar">
     <h3>Filtrar por potencia</h3>
-    <label><input type="checkbox" name="filtro-potencia" value="lento" checked> Lento</label><br>
-    <label><input type="checkbox" name="filtro-potencia" value="estandar" checked> Estándar</label><br>
-    <label><input type="checkbox" name="filtro-potencia" value="rapido" checked> Rápido</label>
-</aside>
+    <label><input type="checkbox" name="filtro-potencia" value="lento" checked /> Lento</label>
+    <label><input type="checkbox" name="filtro-potencia" value="estandar" checked /> Estándar</label>
+    <label><input type="checkbox" name="filtro-potencia" value="rapido" checked /> Rápido</label>
+</div>
 
-<!-- PERFIL -->
+<!-- Mapa -->
+<div id="map"></div>
+
+<!-- Perfil -->
 <div class="perfil-container">
     <div class="perfil-icon" id="perfilIcon">👤</div>
     <div class="perfil-menu" id="perfilMenu">
@@ -27,22 +28,29 @@
     </div>
 </div>
 
-<!-- MAPA -->
-<div id="map"></div>
-
-<!-- MODAL -->
+<!-- Modal -->
 <div id="reservaModal" class="modal">
     <div class="modal-content">
-        <span id="closeModal" class="close">&times;</span>
-        <h2 id="modal-title">Título del cargador</h2>
-        <p id="modal-address">Dirección del cargador</p>
-        <p id="modal-info">Información técnica</p>
+        <span class="close" id="closeModal">&times;</span>
+        <h2 id="modal-title">Título</h2>
+        <p id="modal-address">Dirección</p>
+        <p id="modal-info">Detalles aquí...</p>
+
+        <!-- Nuevos inputs -->
+        <label for="fechaReserva"><strong>Fecha:</strong></label>
+        <input type="date" id="fechaReserva" style="width: 100%; margin: 8px 0;" />
+
+        <label for="horaReserva"><strong>Hora:</strong></label>
+        <input type="time" id="horaReserva" style="width: 100%; margin: 8px 0;" />
+
+        <label for="minutosReserva"><strong>Duración (minutos):</strong></label>
+        <input type="number" id="minutosReserva" placeholder="Ej: 30" min="1" style="width: 100%; margin: 8px 0;" />
+
         <button id="reservarBtn">Reservar cargador</button>
     </div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="usuario.js"></script>
-
 </body>
 </html>

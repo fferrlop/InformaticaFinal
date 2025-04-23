@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "idCargador": 191259,
+    "estado": "Ocupado",
+    "usuario": "Francisfer",
+    "fecha": "2025-05-02",
+    "hora": "19:40",
+    "minutos": 30
+  },
+  {
+    "idCargador": 191948,
+    "estado": "Ocupado",
+    "usuario": "Francisferr",
+    "fecha": "2025-05-02",
+    "hora": "19:40",
+    "minutos": 30
+  }
+]

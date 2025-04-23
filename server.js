@@ -7,13 +7,13 @@ const PORT = 3000;
 
 app.use(express.json());
 
-// ──────── Archivos estáticos ────────
+// ──────────────── Archivos estáticos ────────────────
 app.use('/login', express.static(path.join(__dirname, 'client/login')));
 app.use('/usuario', express.static(path.join(__dirname, 'client/usuario')));
 app.use('/tecnico', express.static(path.join(__dirname, 'client/tecnico')));
 app.use('/admin', express.static(path.join(__dirname, 'client/admin')));
 
-// ──────── Autenticación ────────
+// ──────────────── Autenticación ────────────────
 const USERS_FILE = path.join(__dirname, 'data/users.json');
 
 function getUsers() {
@@ -53,7 +53,7 @@ app.post('/register', (req, res) => {
     res.json({ success: true, role: 'usuario' });
 });
 
-// ──────── Reservas (estados.json) ────────
+// ──────────────── Reservas ────────────────
 const ESTADOS_FILE = path.join(__dirname, 'data/estados.json');
 
 function leerEstados() {
@@ -65,39 +65,60 @@ function guardarEstados(estados) {
     fs.writeFileSync(ESTADOS_FILE, JSON.stringify(estados, null, 2));
 }
 
-app.post('/api/reservar', (req, res) => {
-    const { idCargador, usuario } = req.body;
-    const estados = leerEstados();
+function parseDateTime(fecha, hora) {
+    return new Date(`${fecha}T${hora}`);
+}
 
-    if (estados.find(e => e.idCargador === idCargador && e.estado === "Ocupado")) {
-        return res.json({ success: false, message: "Este cargador ya está reservado." });
+app.post('/api/reservar', (req, res) => {
+    const { idCargador, usuario, fecha, hora, minutos } = req.body;
+
+    if (!idCargador || !usuario || !fecha || !hora || !minutos) {
+        return res.json({ success: false, message: "Todos los campos son obligatorios." });
     }
 
-    estados.push({ idCargador, estado: "Ocupado", usuario });
+    const estados = leerEstados().filter(e =>
+        e.idCargador && e.usuario && e.fecha && e.hora && e.minutos
+    );
+
+    const nuevaInicio = parseDateTime(fecha, hora);
+    const nuevaFin = new Date(nuevaInicio.getTime() + minutos * 60000);
+
+    const conflicto = estados.some(e => {
+        const existenteInicio = parseDateTime(e.fecha, e.hora);
+        const existenteFin = new Date(existenteInicio.getTime() + e.minutos * 60000);
+        return (nuevaInicio < existenteFin && nuevaFin > existenteInicio && e.idCargador === idCargador);
+    });
+
+    if (conflicto) {
+        return res.json({ success: false, message: "Este cargador ya está reservado en ese horario." });
+    }
+
+    estados.push({ idCargador, estado: "Ocupado", usuario, fecha, hora, minutos });
     guardarEstados(estados);
-    res.json({ success: true });
+    res.json({ success: true, message: "Reserva realizada correctamente." });
 });
 
 app.post('/api/cancelar', (req, res) => {
     const { idCargador, usuario } = req.body;
     let estados = leerEstados();
 
-    const existe = estados.find(e => e.idCargador === idCargador && e.usuario === usuario && e.estado === "Ocupado");
-    if (!existe) {
-        return res.json({ success: false, message: "No tienes reserva en este cargador." });
+    const antes = estados.length;
+    estados = estados.filter(e => !(e.idCargador === idCargador && e.usuario === usuario));
+    const despues = estados.length;
+
+    if (antes === despues) {
+        return res.json({ success: false, message: "No tienes reserva activa en este cargador." });
     }
 
-    estados = estados.filter(e => !(e.idCargador === idCargador && e.usuario === usuario));
     guardarEstados(estados);
-    res.json({ success: true });
+    res.json({ success: true, message: "Reserva cancelada correctamente." });
 });
 
 app.get('/api/estados', (req, res) => {
-    const estados = leerEstados();
-    res.json(estados);
+    res.json(leerEstados());
 });
 
-// ──────── Estado Técnico (estadoTecnico.json) ────────
+// ──────────────── Estado Técnico ────────────────
 const ESTADO_TECNICO_FILE = path.join(__dirname, 'data/estadoTecnico.json');
 
 function leerEstadoTecnico() {
@@ -110,8 +131,7 @@ function guardarEstadoTecnico(estados) {
 }
 
 app.get('/api/estado-tecnico', (req, res) => {
-    const estados = leerEstadoTecnico();
-    res.json(estados);
+    res.json(leerEstadoTecnico());
 });
 
 app.post('/api/estado-tecnico', (req, res) => {
@@ -133,7 +153,7 @@ app.post('/api/estado-tecnico', (req, res) => {
     res.json({ success: true });
 });
 
-// ──────── Arrancar servidor ────────
+// ──────────────── Iniciar servidor ────────────────
 app.listen(PORT, () => {
     console.log(`✅ Servidor activo en http://localhost:${PORT}/login/login.html`);
 });

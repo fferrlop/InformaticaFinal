@@ -16,34 +16,26 @@ h1 {
     left: 0;
     width: 100%;
     z-index: 3000;
-    pointer-events: none; /* Evita que bloquee clics al mapa */
 }
 
 /* SIDEBAR */
 #sidebar {
     position: fixed;
-    top: 56px; /* debajo del header */
+    top: 65px;
     left: 0;
     width: 180px;
-    height: calc(100vh - 56px);
+    height: calc(100vh - 65px);
     background: #007BFF;
     color: white;
     padding: 20px 15px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    z-index: 2000;
-    text-align: left;
-    pointer-events: none; /* Evita que bloquee clics al mapa */
+    z-index: 2500;
 }
 
 #sidebar h3 {
     font-size: 16px;
     border-bottom: 1px solid rgba(255,255,255,0.4);
     padding-bottom: 8px;
-}
-
-#sidebar label,
-#sidebar input[type="checkbox"] {
-    pointer-events: auto; /* Permite interacción con checkboxes */
 }
 
 #sidebar label {
@@ -59,10 +51,10 @@ h1 {
 /* MAPA */
 #map {
     position: absolute;
-    top: 65px; /* debajo del header */
-    left: 200px; /* al lado del sidebar */
+    top: 65px;
+    left: 200px;
     width: calc(100% - 180px);
-    height: calc(100vh - 56px);
+    height: calc(100vh - 65px);
     z-index: 100;
 }
 
@@ -156,4 +148,15 @@ h1 {
     cursor: pointer;
     width: 100%;
     margin-top: 15px;
+}
+
+#fechaReserva,
+#horaReserva,
+#minutosReserva {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: none; /* ocultos por defecto */
 }

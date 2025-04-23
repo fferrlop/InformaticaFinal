@@ -7,12 +7,10 @@ window.onload = () => {
     let estadosReserva = [];
     let estadosTecnico = [];
     let marcadores = [];
-    let mapa;
 
     const filtrosSeleccionados = new Set(["lento", "estandar", "rapido"]);
 
     const map = L.map('map').setView(defaultCoords, defaultZoom);
-    mapa = map;
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
@@ -28,13 +26,31 @@ window.onload = () => {
     }
 
     function obtenerEstadoReserva(id) {
-        const e = estadosReserva.find(e => e.idCargador === id);
-        return e ? { estado: e.estado, usuario: e.usuario } : { estado: 'Libre', usuario: null };
+        const reservas = estadosReserva.filter(e => e.idCargador === id);
+        const ahora = new Date();
+        const activa = reservas.find(e => {
+            if (!e.fecha || !e.hora || !e.minutos) return false;
+            const inicio = new Date(`${e.fecha}T${e.hora}`);
+            const fin = new Date(inicio.getTime() + e.minutos * 60000);
+            return ahora >= inicio && ahora < fin;
+        });
+
+        if (activa) {
+            return {
+                estado: 'Ocupado',
+                usuario: activa.usuario
+            };
+        }
+
+        return {
+            estado: 'Libre',
+            usuario: null
+        };
     }
 
     function obtenerEstadoTecnico(id) {
-        const e = estadosTecnico.find(e => e.idCargador === id);
-        return e ? e.estado : 'Activo';
+        const estado = estadosTecnico.find(e => e.idCargador === id);
+        return estado ? estado.estadoTecnico : 'Activo';
     }
 
     function clasificarPotencia(kW) {
@@ -75,18 +91,33 @@ window.onload = () => {
                 `;
 
                 const boton = document.getElementById('reservarBtn');
+                const fecha = document.getElementById('fechaReserva');
+                const hora = document.getElementById('horaReserva');
+                const minutos = document.getElementById('minutosReserva');
 
                 if (estadoT !== "Activo") {
                     boton.style.display = 'none';
+                    fecha.style.display = 'none';
+                    hora.style.display = 'none';
+                    minutos.style.display = 'none';
                 } else {
                     if (estadoR.estado === 'Ocupado' && estadoR.usuario === usuario) {
                         boton.textContent = 'Cancelar reserva';
                         boton.style.display = 'block';
+                        fecha.style.display = 'none';
+                        hora.style.display = 'none';
+                        minutos.style.display = 'none';
                     } else if (estadoR.estado === 'Libre') {
                         boton.textContent = 'Reservar cargador';
                         boton.style.display = 'block';
+                        fecha.style.display = 'inline-block';
+                        hora.style.display = 'inline-block';
+                        minutos.style.display = 'inline-block';
                     } else {
                         boton.style.display = 'none';
+                        fecha.style.display = 'none';
+                        hora.style.display = 'none';
+                        minutos.style.display = 'none';
                     }
                 }
 
@@ -120,21 +151,50 @@ window.onload = () => {
 
     document.getElementById('reservarBtn').onclick = async () => {
         if (!cargadorSeleccionadoId) return;
+
         const estadoActual = obtenerEstadoReserva(cargadorSeleccionadoId);
         const ruta = (estadoActual.estado === 'Ocupado' && estadoActual.usuario === usuario)
             ? '/api/cancelar'
             : '/api/reservar';
 
-        const res = await fetch(ruta, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idCargador: cargadorSeleccionadoId, usuario })
-        });
+        if (ruta === '/api/reservar') {
+            const fecha = document.getElementById('fechaReserva').value;
+            const hora = document.getElementById('horaReserva').value;
+            const minutos = parseInt(document.getElementById('minutosReserva').value);
 
-        const data = await res.json();
-        alert(data.message || (ruta === '/api/cancelar' ? 'Reserva cancelada' : 'Reserva realizada'));
+            if (!fecha || !hora || !minutos || isNaN(minutos) || minutos <= 0) {
+                alert("Rellena correctamente la fecha, hora y duración.");
+                return;
+            }
+
+            const res = await fetch(ruta, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idCargador: cargadorSeleccionadoId,
+                    usuario,
+                    fecha,
+                    hora,
+                    minutos
+                })
+            });
+
+            const data = await res.json();
+            alert(data.message || 'Reserva realizada');
+            location.reload();
+        } else {
+            const res = await fetch(ruta, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idCargador: cargadorSeleccionadoId, usuario })
+            });
+
+            const data = await res.json();
+            alert(data.message || 'Reserva cancelada');
+            location.reload();
+        }
+
         document.getElementById('reservaModal').style.display = 'none';
-        location.reload();
     };
 
     document.getElementById('closeModal').onclick = () => {
@@ -163,7 +223,6 @@ window.onload = () => {
         window.location.href = '/login/login.html';
     });
 
-    // Filtros
     document.querySelectorAll('input[name="filtro-potencia"]').forEach(input => {
         input.addEventListener('change', () => {
             filtrosSeleccionados.clear();
