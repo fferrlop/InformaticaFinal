@@ -1,10 +1,6 @@
 [
   {
-    "idCargador": 307307,
-    "estadoTecnico": "mantenimiento"
-  },
-  {
     "idCargador": 191948,
-    "estadoTecnico": "mantenimiento"
+    "estadoTecnico": "Fuera de servicio"
   }
 ]
