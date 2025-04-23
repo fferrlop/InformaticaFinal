@@ -4,28 +4,22 @@
     <meta charset="UTF-8">
     <title>Usuario - Encuentra tu cargador</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="usuario.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
 </head>
 <body>
+
 <h1>Bienvenido, Usuario</h1>
 
-<div id="map"></div>
+<!-- FILTROS -->
+<aside id="sidebar">
+    <h3>Filtrar por potencia</h3>
+    <label><input type="checkbox" name="filtro-potencia" value="lento" checked> Lento</label><br>
+    <label><input type="checkbox" name="filtro-potencia" value="estandar" checked> Estándar</label><br>
+    <label><input type="checkbox" name="filtro-potencia" value="rapido" checked> Rápido</label>
+</aside>
 
-<!-- MODAL RESERVA -->
-<div id="reservaModal" class="modal">
-    <div class="modal-content">
-        <span id="closeModal" class="close">&times;</span>
-        <h2 id="modal-title">Título del cargador</h2>
-        <p id="modal-address">Dirección del cargador</p>
-        <p id="modal-info">Detalles técnicos u observaciones</p>
-        <button id="reservarBtn">Reservar cargador</button>
-    </div>
-</div>
-
-<!-- Perfil -->
+<!-- PERFIL -->
 <div class="perfil-container">
     <div class="perfil-icon" id="perfilIcon">👤</div>
     <div class="perfil-menu" id="perfilMenu">
@@ -33,8 +27,22 @@
     </div>
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- MAPA -->
+<div id="map"></div>
+
+<!-- MODAL -->
+<div id="reservaModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2 id="modal-title">Título del cargador</h2>
+        <p id="modal-address">Dirección del cargador</p>
+        <p id="modal-info">Información técnica</p>
+        <button id="reservarBtn">Reservar cargador</button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="usuario.js"></script>
+
 </body>
 </html>
