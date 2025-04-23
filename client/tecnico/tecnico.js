@@ -21,11 +21,7 @@ window.onload = () => {
                         cargador.AddressInfo.Latitude,
                         cargador.AddressInfo.Longitude
                     ];
-                    const title = cargador.AddressInfo.Title || 'Cargador sin nombre';
-                    const address = cargador.AddressInfo.AddressLine1 || 'Sin dirección';
-
                     const marker = L.marker(coords).addTo(map)
-                        .bindPopup(`<strong>${title}</strong><br>${address}`)
                         .on('click', () => mostrarDetalles(cargador));
                 });
             })
@@ -38,13 +34,14 @@ window.onload = () => {
         const estadoActual = cargador.estadoManual || cargador.StatusType?.Title || 'Desconocido';
 
         const detalle = `
-      <strong>${cargador.AddressInfo.Title}</strong><br>
-      Dirección: ${cargador.AddressInfo.AddressLine1}<br>
-      Estado actual: <em id="estadoActual">${estadoActual}</em>
-    `;
+            <strong>${cargador.AddressInfo.Title}</strong><br>
+            Dirección: ${cargador.AddressInfo.AddressLine1}<br>
+            Estado actual: <em id="estadoActual">${estadoActual}</em>
+        `;
 
+        document.getElementById("modal-title").textContent = "Detalles del Cargador";
         document.getElementById("detalle-info").innerHTML = detalle;
-        document.getElementById("panel-detalles").style.display = "block";
+        document.getElementById("reservaModal").style.display = "block";
         document.getElementById("estadoNuevo").value = "activo";
 
         cargarHistorial(cargador.ID);
@@ -67,12 +64,14 @@ window.onload = () => {
 
     window.actualizarEstado = () => {
         if (!cargadorSeleccionado) return;
-
         const nuevoEstado = document.getElementById("estadoNuevo").value;
+
         cargadorSeleccionado.estadoManual = nuevoEstado;
 
         const estadoActualElem = document.getElementById("estadoActual");
-        if (estadoActualElem) estadoActualElem.innerText = nuevoEstado;
+        if (estadoActualElem) {
+            estadoActualElem.innerText = nuevoEstado;
+        }
 
         alert(`Estado actualizado a "${nuevoEstado}" para el cargador ${cargadorSeleccionado.ID}`);
     };
@@ -86,30 +85,41 @@ window.onload = () => {
             return;
         }
 
-        alert(`Incidencia reportada para cargador ${cargadorSeleccionado.ID}:\n${descripcion}`);
+        alert(`Incidencia reportada:\n${descripcion}`);
         document.getElementById("reporte").value = "";
     };
 
-    // Menú perfil
-    const perfilIcon = document.getElementById('perfilIcon');
-    const perfilMenu = document.getElementById('perfilMenu');
+    // Perfil
+    const perfilIcon = document.getElementById("perfilIcon");
+    const perfilMenu = document.getElementById("perfilMenu");
 
-    perfilIcon.addEventListener('click', (e) => {
+    perfilIcon.addEventListener("click", (e) => {
         e.stopPropagation();
-        perfilMenu.style.display = (perfilMenu.style.display === 'block') ? 'none' : 'block';
+        perfilMenu.style.display = perfilMenu.style.display === "block" ? "none" : "block";
     });
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener("click", (e) => {
         if (!perfilMenu.contains(e.target) && e.target !== perfilIcon) {
-            perfilMenu.style.display = 'none';
+            perfilMenu.style.display = "none";
         }
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.removeItem('usuarioActivo');
-        window.location.href = '/login/login.html';
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("usuario");
+        window.location.href = "/login/login.html";
     });
 
+    document.getElementById("closeModal").onclick = () => {
+        document.getElementById("reservaModal").style.display = "none";
+    };
+
+    window.onclick = (e) => {
+        if (e.target.id === "reservaModal") {
+            document.getElementById("reservaModal").style.display = "none";
+        }
+    };
+
+    // Geolocalización
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {

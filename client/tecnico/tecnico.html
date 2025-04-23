@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <title>Panel Técnico</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="tecnico.css" />
 </head>
 <body>
-<h1>Bienvenido, Técnico</h1>
+<h1>Panel del Técnico</h1>
 
 <!-- Perfil -->
 <div class="perfil-container">
@@ -21,28 +20,30 @@
 <!-- Mapa -->
 <div id="map"></div>
 
-<!-- Panel lateral de detalles -->
-<div id="panel-detalles" class="info-panel">
-    <h2>Detalles del Cargador</h2>
-    <p id="detalle-info">Selecciona un cargador para ver sus detalles.</p>
+<!-- Modal -->
+<div id="reservaModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2 id="modal-title">Detalles del Cargador</h2>
+        <p id="detalle-info">Selecciona un cargador para ver sus detalles.</p>
 
-    <label for="estadoNuevo">Actualizar Estado:</label>
-    <select id="estadoNuevo">
-        <option value="activo">Activo</option>
-        <option value="mantenimiento">Mantenimiento</option>
-        <option value="fuera_servicio">Fuera de servicio</option>
-    </select>
-    <button onclick="actualizarEstado()">Actualizar</button>
+        <label for="estadoNuevo">Actualizar Estado:</label>
+        <select id="estadoNuevo">
+            <option value="activo">Activo</option>
+            <option value="mantenimiento">Mantenimiento</option>
+            <option value="fuera_servicio">Fuera de servicio</option>
+        </select>
+        <button onclick="actualizarEstado()">Actualizar</button>
 
-    <h3>Historial de Mantenimiento</h3>
-    <ul id="historial"></ul>
+        <h3>Historial de Mantenimiento</h3>
+        <ul id="historial"></ul>
 
-    <h3>Reportar Incidencia</h3>
-    <textarea id="reporte" placeholder="Describa la incidencia..."></textarea>
-    <button onclick="reportarIncidencia()">Enviar Reporte</button>
+        <h3>Reportar Incidencia</h3>
+        <textarea id="reporte" placeholder="Describa la incidencia..."></textarea>
+        <button onclick="reportarIncidencia()">Enviar Reporte</button>
+    </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="tecnico.js"></script>
 </body>
