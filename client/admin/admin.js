@@ -117,18 +117,25 @@ window.onload = () => {
         window.location.href = '/login/login.html';
     });
 
-    // Estadísticas
-    fetch('/api/estados')
-        .then(res => res.json())
-        .then(data => {
-            const total = data.length;
-            const ocupados = data.filter(d => d.estado === 'Ocupado').length;
-            const libres = total - ocupados;
+    // Estadísticas (actualizado)
+    Promise.all([
+        fetch('/api/estados').then(res => res.json()),
+        fetch(`https://api.openchargemap.io/v3/poi/?output=json&countrycode=ES&latitude=40.4168&longitude=-3.7038&distance=10&maxresults=50&compact=true&verbose=false&key=${apiKey}`)
+            .then(res => res.json())
+    ])
+        .then(([estados, cargadores]) => {
+            const totalCargadores = cargadores.length;
+            const ocupados = estados.filter(d => d.estado === 'Ocupado').length;
+            const libres = totalCargadores - ocupados;
+
             document.getElementById('estadisticas').innerHTML = `
-                <p><strong>Total de reservas:</strong> ${total}</p>
-                <p><strong>Ocupados:</strong> ${ocupados}</p>
-                <p><strong>Libres:</strong> ${libres}</p>
-            `;
+            <p><strong>Total de cargadores:</strong> ${totalCargadores}</p>
+            <p><strong>Ocupados:</strong> ${ocupados}</p>
+            <p><strong>Libres:</strong> ${libres}</p>
+        `;
+        })
+        .catch(err => {
+            console.error("Error cargando estadísticas:", err);
         });
 
     // Usuarios

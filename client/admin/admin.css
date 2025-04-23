@@ -27,10 +27,21 @@ body {
 .perfil-container {
     position: relative;
     cursor: pointer;
+    margin-right: 40px;
 }
+
 
 .perfil-icon {
     font-size: 1.5rem;
+    background-color: #007BFF;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .perfil-menu {
@@ -45,6 +56,7 @@ body {
     padding: 0.5rem;
     min-width: 130px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 2000;
 }
 
 .perfil-menu button {
@@ -62,10 +74,6 @@ body {
     background-color: #f0f0f0;
 }
 
-.perfil-container:hover .perfil-menu {
-    display: block;
-}
-
 /* MAPA */
 #map {
     height: 400px;
@@ -80,8 +88,10 @@ body {
     display: none;
     position: fixed;
     z-index: 999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0,0,0,0.4);
     justify-content: center;
     align-items: center;
