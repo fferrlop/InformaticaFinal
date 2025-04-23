@@ -1,26 +1,8 @@
 [
   {
     "idCargador": 202406,
-    "descripcion": "sdads",
+    "descripcion": "El cargador no funciona",
     "usuario": "tecnico1",
     "fecha": "2025-04-23T19:36:33.495Z"
-  },
-  {
-    "idCargador": 210104,
-    "descripcion": "asd",
-    "usuario": "tecnico1",
-    "fecha": "2025-04-23T19:40:02.376Z"
-  },
-  {
-    "idCargador": 207153,
-    "descripcion": "oihsapdofiuhpowi",
-    "usuario": "tecnico1",
-    "fecha": "2025-04-23T20:10:45.140Z"
-  },
-  {
-    "idCargador": 191948,
-    "descripcion": "fguhft",
-    "usuario": "tecnico1",
-    "fecha": "2025-04-23T20:47:51.744Z"
   }
 ]

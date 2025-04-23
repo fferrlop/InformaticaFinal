@@ -92,11 +92,14 @@ function parseDateTime(fecha, hora) {
 }
 
 app.post('/api/reservar', (req, res) => {
-    const { idCargador, usuario, fecha, hora, minutos } = req.body;
-
-    if (!idCargador || !usuario || !fecha || !hora || !minutos) {
+    if (
+        idCargador === undefined || idCargador === null ||
+        !usuario || !fecha || !hora ||
+        minutos === undefined || minutos === null
+    ) {
         return res.json({ success: false, message: "Todos los campos son obligatorios." });
     }
+
 
     const duracion = parseInt(minutos);
     if (isNaN(duracion) || duracion <= 0 || duracion > 240) {
@@ -249,3 +252,6 @@ app.get('/api/incidencia', (req, res) => {
 app.listen(PORT, () => {
     console.log(`✅ Servidor activo en http://localhost:${PORT}/login/login.html`);
 });
+
+
+

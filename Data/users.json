@@ -19,5 +19,12 @@
     "nombre": "Fran",
     "apellido": "Ferrer",
     "role": "usuario"
+  },
+  {
+    "username": "Romo",
+    "password": "123",
+    "nombre": "Jorge",
+    "apellido": "Romojaro",
+    "role": "usuario"
   }
 ]

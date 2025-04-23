@@ -198,3 +198,6 @@ function editarUsuario(username, nombreActual, apellidoActual) {
             location.reload();
         });
 }
+
+
+

@@ -22,5 +22,17 @@
   {
     "fecha": "2025-04-23T20:59:13.429Z",
     "evento": "Estado técnico de 307307 actualizado a Activo"
+  },
+  {
+    "fecha": "2025-04-23T21:40:31.055Z",
+    "evento": "Nuevo usuario registrado: Romo"
+  },
+  {
+    "fecha": "2025-04-23T21:40:57.090Z",
+    "evento": "Reserva realizada por tecnico1 en cargador 210104"
+  },
+  {
+    "fecha": "2025-04-23T21:41:10.606Z",
+    "evento": "Reserva realizada por tecnico1 en cargador 191259"
   }
 ]
