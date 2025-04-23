@@ -9,7 +9,7 @@
 <body>
 <h1>Bienvenido, Técnico</h1>
 
-<!-- Perfil -->
+<!-- Icono Perfil -->
 <div class="perfil-container">
     <div class="perfil-icon" id="perfilIcon">👤</div>
     <div class="perfil-menu" id="perfilMenu">
@@ -21,21 +21,28 @@
 <div id="map"></div>
 
 <!-- Modal Detalles -->
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h2 id="detalle-titulo">Título del cargador</h2>
-        <p id="detalle-direccion">Dirección del cargador</p>
-        <label for="estadoNuevo"><strong>Estado técnico:</strong></label>
-        <select id="estadoNuevo">
-            <option value="Activo">Activo</option>
-            <option value="Mantenimiento">Mantenimiento</option>
-            <option value="Fuera de servicio">Fuera de servicio</option>
-        </select>
-        <button id="actualizarEstadoBtn">Actualizar estado</button>
-    </div>
+<div id="panel-detalles" class="modal-content">
+    <span class="close" onclick="document.getElementById('panel-detalles').style.display='none'">&times;</span>
+    <h2>Detalles del Cargador</h2>
+    <p id="detalle-info">Selecciona un cargador para ver sus detalles.</p>
+
+    <label for="estadoNuevo"><strong>Actualizar Estado Técnico:</strong></label>
+    <select id="estadoNuevo">
+        <option value="activo">Activo</option>
+        <option value="mantenimiento">Mantenimiento</option>
+        <option value="fuera_de_servicio">Fuera de servicio</option>
+    </select>
+    <button onclick="actualizarEstado()">Actualizar Estado</button>
+
+    <h3>Historial de Mantenimiento</h3>
+    <ul id="historial"></ul>
+
+    <h3>Reportar Incidencia</h3>
+    <textarea id="reporte" placeholder="Describa la incidencia..."></textarea>
+    <button onclick="reportarIncidencia()">Enviar Reporte</button>
 </div>
 
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="tecnico.js"></script>
 </body>
