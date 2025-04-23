@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Panel Técnico</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="tecnico.css" />
 </head>
 <body>
-<h1>Panel del Técnico</h1>
+<h1>Bienvenido, Técnico</h1>
 
 <!-- Perfil -->
 <div class="perfil-container">
@@ -20,31 +20,23 @@
 <!-- Mapa -->
 <div id="map"></div>
 
-<!-- Modal -->
-<div id="reservaModal" class="modal">
+<!-- Modal Detalles -->
+<div id="modal" class="modal">
     <div class="modal-content">
-        <span id="closeModal" class="close">&times;</span>
-        <h2 id="modal-title">Detalles del Cargador</h2>
-        <p id="detalle-info">Selecciona un cargador para ver sus detalles.</p>
-
-        <label for="estadoNuevo">Actualizar Estado:</label>
+        <span class="close" id="closeModal">&times;</span>
+        <h2 id="detalle-titulo">Título del cargador</h2>
+        <p id="detalle-direccion">Dirección del cargador</p>
+        <label for="estadoNuevo"><strong>Estado técnico:</strong></label>
         <select id="estadoNuevo">
-            <option value="activo">Activo</option>
-            <option value="mantenimiento">Mantenimiento</option>
-            <option value="fuera_servicio">Fuera de servicio</option>
+            <option value="Activo">Activo</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+            <option value="Fuera de servicio">Fuera de servicio</option>
         </select>
-        <button onclick="actualizarEstado()">Actualizar</button>
-
-        <h3>Historial de Mantenimiento</h3>
-        <ul id="historial"></ul>
-
-        <h3>Reportar Incidencia</h3>
-        <textarea id="reporte" placeholder="Describa la incidencia..."></textarea>
-        <button onclick="reportarIncidencia()">Enviar Reporte</button>
+        <button id="actualizarEstadoBtn">Actualizar estado</button>
     </div>
 </div>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="tecnico.js"></script>
 </body>
 </html>

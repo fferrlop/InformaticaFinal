@@ -14,9 +14,8 @@ h1 {
 }
 
 #map {
-    height: calc(100vh - 56px);
     width: 100%;
-    z-index: 1;
+    height: 90vh;
 }
 
 /* Modal estilo usuario */
@@ -51,25 +50,19 @@ h1 {
     color: #555;
 }
 
-/* Botones */
-button {
-    margin-top: 10px;
-    background-color: #005cbf;
+#actualizarEstadoBtn {
+    background-color: #007BFF;
     color: white;
+    padding: 10px;
     border: none;
-    padding: 8px;
     border-radius: 4px;
     cursor: pointer;
-}
-
-button:hover {
-    background-color: #003f7f;
-}
-
-textarea {
     width: 100%;
-    height: 60px;
-    margin-top: 5px;
+    margin-top: 15px;
+}
+
+#actualizarEstadoBtn:hover {
+    background-color: #0056b3;
 }
 
 /* Perfil */
@@ -109,8 +102,7 @@ textarea {
 }
 
 .perfil-menu button {
-    background: #f44336;
-    color: white;
+    background: none;
     border: none;
     padding: 6px 10px;
     width: 100%;
@@ -119,5 +111,5 @@ textarea {
 }
 
 .perfil-menu button:hover {
-    background: #d32f2f;
+    background-color: #f0f0f0;
 }
