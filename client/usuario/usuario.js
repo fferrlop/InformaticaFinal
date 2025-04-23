@@ -237,54 +237,127 @@ window.onload = () => {
     });
 };
 
-document.getElementById('gestionarBtn').addEventListener('click', async () => {
-    const res = await fetch('/api/estados');
-    const reservas = await res.json();
+document.getElementById('gestionarBtn').onclick = async () => {
+    const usuario = localStorage.getItem('usuario');
+    const listaDiv = document.getElementById('listaReservas');
+    listaDiv.innerHTML = '';
 
-    const usuarioActual = localStorage.getItem('usuario');
-    const misReservas = reservas.filter(r => r.usuario === usuarioActual);
+    const estados = await fetch('/api/estados').then(r => r.json());
+    const reservasUsuario = estados.filter(r => r.usuario === usuario);
 
-    const contenedor = document.getElementById('listaReservas');
-    contenedor.innerHTML = "";
-
-    if (misReservas.length === 0) {
-        contenedor.textContent = "No tienes reservas activas.";
+    if (reservasUsuario.length === 0) {
+        listaDiv.innerHTML = '<p>No tienes reservas activas.</p>';
     } else {
-        misReservas.forEach((r, i) => {
+        reservasUsuario.forEach(r => {
             const div = document.createElement('div');
+            div.className = 'reserva-item';
             div.innerHTML = `
-                <p><strong>ID Cargador:</strong> ${r.idCargador}<br>
+                <p><strong>Cargador:</strong> ${r.idCargador}<br>
                 <strong>Fecha:</strong> ${r.fecha}<br>
                 <strong>Hora:</strong> ${r.hora}<br>
-                <strong>Duración:</strong> ${r.minutos} min</p>
-                <button class="cancelar-btn" data-id="${r.idCargador}">Cancelar</button>
+                <strong>Duración:</strong> ${r.minutos} minutos</p>
+                <button class="cancelarBtn" data-id="${r.idCargador}">Cancelar</button>
+                <button class="modificarBtn" data-id="${r.idCargador}" data-fecha="${r.fecha}" data-hora="${r.hora}" data-minutos="${r.minutos}">Modificar</button>
                 <hr>
             `;
-            contenedor.appendChild(div);
+            listaDiv.appendChild(div);
+        });
+
+        // Cancelar reserva
+        document.querySelectorAll('.cancelarBtn').forEach(btn => {
+            btn.onclick = async () => {
+                const id = btn.getAttribute('data-id');
+                await fetch('/api/cancelar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idCargador: parseInt(id), usuario })
+                });
+                alert('Reserva cancelada');
+                document.getElementById('gestionModal').style.display = 'none';
+                location.reload();
+            };
+        });
+
+        // Modificar reserva
+        document.querySelectorAll('.modificarBtn').forEach(btn => {
+            btn.onclick = () => {
+                // Rellenar modal original con valores
+                const id = btn.getAttribute('data-id');
+                const fecha = btn.getAttribute('data-fecha');
+                const hora = btn.getAttribute('data-hora');
+                const minutos = btn.getAttribute('data-minutos');
+
+                cargadorSeleccionadoId = parseInt(id);
+                document.getElementById('fechaReserva').value = fecha;
+                document.getElementById('horaReserva').value = hora;
+                document.getElementById('minutosReserva').value = minutos;
+
+                document.getElementById('reservaModal').style.display = 'block';
+                document.getElementById('gestionModal').style.display = 'none';
+            };
         });
     }
 
-    document.getElementById('gestionarModal').style.display = 'block';
-});
-
-document.getElementById('closeGestionar').onclick = () => {
-    document.getElementById('gestionarModal').style.display = 'none';
+    document.getElementById('gestionModal').style.display = 'block';
 };
 
-document.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('cancelar-btn')) {
-        const id = parseInt(e.target.dataset.id);
-        const usuario = localStorage.getItem('usuario');
+document.getElementById('closeGestionModal').onclick = () => {
+    document.getElementById('gestionModal').style.display = 'none';
+};
 
-        const res = await fetch('/api/cancelar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idCargador: id, usuario })
-        });
 
-        const data = await res.json();
-        alert(data.message || 'Reserva cancelada');
-        document.getElementById('gestionarModal').style.display = 'none';
-        location.reload();
-    }
+let cargadorAModificar = null;
+
+document.querySelectorAll('.modificarBtn').forEach(btn => {
+    btn.onclick = () => {
+        cargadorAModificar = parseInt(btn.getAttribute('data-id'));
+        document.getElementById('modFecha').value = btn.getAttribute('data-fecha');
+        document.getElementById('modHora').value = btn.getAttribute('data-hora');
+        document.getElementById('modMinutos').value = btn.getAttribute('data-minutos');
+        document.getElementById('modalModificar').style.display = 'block';
+    };
 });
+
+document.getElementById('closeModalModificar').onclick = () => {
+    document.getElementById('modalModificar').style.display = 'none';
+};
+
+document.getElementById('guardarCambiosBtn').onclick = async () => {
+    const usuario = localStorage.getItem('usuario');
+    const fecha = document.getElementById('modFecha').value;
+    const hora = document.getElementById('modHora').value;
+    const minutos = parseInt(document.getElementById('modMinutos').value);
+
+    const ahora = new Date();
+    const nuevaInicio = new Date(`${fecha}T${hora}`);
+    if (nuevaInicio < ahora) {
+        alert("No puedes modificar a una fecha/hora pasada.");
+        return;
+    }
+
+    if (!fecha || !hora || !minutos || isNaN(minutos) || minutos <= 0 || minutos > 240) {
+        alert("Rellena correctamente los campos. Duración máxima: 240 minutos.");
+        return;
+    }
+
+    // Primero cancelamos la anterior
+    await fetch('/api/cancelar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idCargador: cargadorAModificar, usuario })
+    });
+
+    // Luego hacemos la nueva reserva
+    const res = await fetch('/api/reservar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idCargador: cargadorAModificar, usuario, fecha, hora, minutos })
+    });
+
+    const data = await res.json();
+    alert(data.message || 'Reserva modificada');
+
+    document.getElementById('modalModificar').style.display = 'none';
+    document.getElementById('gestionModal').style.display = 'none';
+    location.reload();
+};

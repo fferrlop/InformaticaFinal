@@ -50,14 +50,35 @@
     </div>
 </div>
 
-<!-- Modal Gestionar Reservas -->
-<div id="gestionarModal" class="modal">
+<!-- Modal de Gestión de Reservas -->
+<div id="gestionModal" class="modal">
     <div class="modal-content">
-        <span class="close" id="closeGestionar">&times;</span>
-        <h2>Mis Reservas</h2>
-        <div id="listaReservas">Cargando reservas...</div>
+        <span class="close" id="closeGestionModal">&times;</span>
+        <h2>Tus reservas activas</h2>
+        <div id="listaReservas">
+            <!-- Se llena con JS -->
+        </div>
     </div>
 </div>
+
+<!-- Modal Modificar -->
+<div id="modalModificar" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModalModificar">&times;</span>
+        <h2>Modificar Reserva</h2>
+        <label for="modFecha"><strong>Fecha:</strong></label>
+        <input type="date" id="modFecha" />
+
+        <label for="modHora"><strong>Hora:</strong></label>
+        <input type="time" id="modHora" />
+
+        <label for="modMinutos"><strong>Duración (minutos):</strong></label>
+        <input type="number" id="modMinutos" min="1" max="240" placeholder="Máx 240" />
+
+        <button id="guardarCambiosBtn">Guardar cambios</button>
+    </div>
+</div>
+
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="usuario.js"></script>

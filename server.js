@@ -72,16 +72,28 @@ function parseDateTime(fecha, hora) {
 app.post('/api/reservar', (req, res) => {
     const { idCargador, usuario, fecha, hora, minutos } = req.body;
 
+    // Validación básica
     if (!idCargador || !usuario || !fecha || !hora || !minutos) {
         return res.json({ success: false, message: "Todos los campos son obligatorios." });
     }
 
+    const duracion = parseInt(minutos);
+    if (isNaN(duracion) || duracion <= 0 || duracion > 240) {
+        return res.json({ success: false, message: "La duración debe estar entre 1 y 240 minutos." });
+    }
+
+    const nuevaInicio = parseDateTime(fecha, hora);
+    const ahora = new Date();
+
+    if (nuevaInicio <= ahora) {
+        return res.json({ success: false, message: "No puedes reservar en el pasado." });
+    }
+
+    const nuevaFin = new Date(nuevaInicio.getTime() + duracion * 60000);
+
     const estados = leerEstados().filter(e =>
         e.idCargador && e.usuario && e.fecha && e.hora && e.minutos
     );
-
-    const nuevaInicio = parseDateTime(fecha, hora);
-    const nuevaFin = new Date(nuevaInicio.getTime() + minutos * 60000);
 
     const conflicto = estados.some(e => {
         const existenteInicio = parseDateTime(e.fecha, e.hora);
@@ -93,10 +105,11 @@ app.post('/api/reservar', (req, res) => {
         return res.json({ success: false, message: "Este cargador ya está reservado en ese horario." });
     }
 
-    estados.push({ idCargador, estado: "Ocupado", usuario, fecha, hora, minutos });
+    estados.push({ idCargador, estado: "Ocupado", usuario, fecha, hora, minutos: duracion });
     guardarEstados(estados);
     res.json({ success: true, message: "Reserva realizada correctamente." });
 });
+
 
 app.post('/api/cancelar', (req, res) => {
     const { idCargador, usuario } = req.body;
