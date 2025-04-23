@@ -2,28 +2,81 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Lectro - Iniciar sesión</title>
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
+<h1 class="brand-title">Lectro</h1>
+
 <div class="login-container">
-    <h2 id="form-title">Iniciar sesión</h2>
+    <h2 id="form-title">Iniciar sesión como usuario</h2>
     <form id="login-form">
-        <div id="extra-fields" style="display: none;">
-            <input type="text" placeholder="Nombre" id="nombre">
-            <input type="text" placeholder="Apellido" id="apellido">
-        </div>
         <input type="text" placeholder="Nombre de usuario" id="username" required>
         <input type="password" placeholder="Contraseña" id="password" required>
-        <input type="password" placeholder="Verificar contraseña" id="confirm-password" style="display: none;">
         <button type="submit" id="submit-btn">Iniciar sesión</button>
     </form>
-    <div class="toggle-buttons">
-        <button id="login-btn">Iniciar sesión</button>
-        <button id="register-btn">Crear usuario</button>
+
+    <div class="action-buttons">
+        <button id="open-register-modal">Crear cuenta</button>
     </div>
+
     <p id="message"></p>
+
+    <div class="role-buttons">
+        <div class="role-button">
+            <p>¿Eres técnico?</p>
+            <button id="open-tecnico-modal">Acceder</button>
+        </div>
+        <div class="role-button">
+            <p>¿Eres administrador?</p>
+            <button id="open-admin-modal">Acceder</button>
+        </div>
+    </div>
 </div>
+
+<!-- MODALES -->
+<div id="register-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" data-close="register-modal">&times;</span>
+        <h2>Crear cuenta</h2>
+        <form id="register-form">
+            <input type="text" placeholder="Nombre" id="reg-nombre" required>
+            <input type="text" placeholder="Apellido" id="reg-apellido" required>
+            <input type="text" placeholder="Nombre de usuario" id="reg-username" required>
+            <input type="password" placeholder="Contraseña" id="reg-password" required>
+            <input type="password" placeholder="Confirmar contraseña" id="reg-confirm-password" required>
+            <button type="submit">Registrarse</button>
+            <p id="register-message"></p>
+        </form>
+    </div>
+</div>
+
+<div id="tecnico-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" data-close="tecnico-modal">&times;</span>
+        <h2>Iniciar sesión como técnico</h2>
+        <form id="tecnico-form">
+            <input type="text" placeholder="Usuario técnico" id="tec-username" required>
+            <input type="password" placeholder="Contraseña" id="tec-password" required>
+            <button type="submit">Acceder</button>
+            <p id="tec-message"></p>
+        </form>
+    </div>
+</div>
+
+<div id="admin-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" data-close="admin-modal">&times;</span>
+        <h2>Iniciar sesión como administrador</h2>
+        <form id="admin-form">
+            <input type="text" placeholder="Usuario admin" id="admin-username" required>
+            <input type="password" placeholder="Contraseña" id="admin-password" required>
+            <button type="submit">Acceder</button>
+            <p id="admin-message"></p>
+        </form>
+    </div>
+</div>
+
 <script src="login.js"></script>
 </body>
 </html>
