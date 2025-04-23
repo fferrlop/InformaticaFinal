@@ -1,23 +1,27 @@
 [
-
-    {
-      "username": "admin",
-      "password": "admin123",
-      "nombre": "Administrador",
-      "apellido": "General",
-      "role": "admin"
-    },
-    {
-      "username": "tecnico1",
-      "password": "tec123",
-      "nombre": "Técnico",
-      "apellido": "Responsable",
-      "role": "tecnico"
-    },
-
-
+  {
+    "username": "admin",
+    "password": "admin123",
+    "nombre": "Administrador",
+    "apellido": "General",
+    "role": "admin"
+  },
+  {
+    "username": "tecnico1",
+    "password": "tec123",
+    "nombre": "Técnico",
+    "apellido": "Responsable",
+    "role": "tecnico"
+  },
   {
     "username": "Francisfer",
+    "password": "123",
+    "nombre": "Fran",
+    "apellido": "Ferrer",
+    "role": "usuario"
+  },
+  {
+    "username": "Francisferr",
     "password": "123",
     "nombre": "Fran",
     "apellido": "Ferrer",

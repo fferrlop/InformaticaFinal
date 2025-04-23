@@ -41,10 +41,12 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     const data = await response.json();
 
     if (data.success) {
+        localStorage.setItem('usuario', username);
         window.location.href = `/${data.role}/${data.role}.html`;
     } else {
         document.getElementById('message').textContent = data.message;
     }
+
 
 
 });

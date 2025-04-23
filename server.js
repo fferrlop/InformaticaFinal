@@ -60,3 +60,55 @@ app.post('/register', (req, res) => {
 app.listen(PORT, () => {
     console.log(`✅ Servidor activo en http://localhost:${PORT}/login/login.html`);
 });
+
+// ─────────────────────────────────────────────────────
+// ESTADO DE CARGADORES - GESTIÓN DE RESERVAS
+// ─────────────────────────────────────────────────────
+
+const ESTADOS_FILE = path.join(__dirname, 'data/estados.json');
+
+function leerEstados() {
+    if (!fs.existsSync(ESTADOS_FILE)) return [];
+    return JSON.parse(fs.readFileSync(ESTADOS_FILE));
+}
+
+function guardarEstados(estados) {
+    fs.writeFileSync(ESTADOS_FILE, JSON.stringify(estados, null, 2));
+}
+
+// Reservar un cargador
+app.post('/api/reservar', (req, res) => {
+    const { idCargador, usuario } = req.body;
+    const estados = leerEstados();
+
+    if (estados.find(e => e.idCargador === idCargador && e.estado === "Ocupado")) {
+        return res.json({ success: false, message: "Este cargador ya está reservado." });
+    }
+
+    estados.push({ idCargador, estado: "Ocupado", usuario });
+    guardarEstados(estados);
+    res.json({ success: true });
+});
+
+// Cancelar una reserva
+app.post('/api/cancelar', (req, res) => {
+    const { idCargador, usuario } = req.body;
+    let estados = leerEstados();
+
+    const existe = estados.find(e => e.idCargador === idCargador && e.usuario === usuario && e.estado === "Ocupado");
+    if (!existe) {
+        return res.json({ success: false, message: "No tienes reserva en este cargador." });
+    }
+
+    estados = estados.filter(e => !(e.idCargador === idCargador && e.usuario === usuario));
+    guardarEstados(estados);
+    res.json({ success: true });
+});
+
+// Obtener estados actuales (GET)
+app.get('/api/estados', (req, res) => {
+    const estados = leerEstados();
+    res.json(estados);
+});
+
+
