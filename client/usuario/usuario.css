@@ -52,8 +52,8 @@ h1 {
 /* MAPA */
 #map {
     position: absolute;
-    top: 56px; /* debajo del header */
-    left: 180px; /* al lado del sidebar */
+    top: 65px; /* debajo del header */
+    left: 200px; /* al lado del sidebar */
     width: calc(100% - 180px);
     height: calc(100vh - 56px);
     z-index: 100;
