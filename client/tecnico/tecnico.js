@@ -210,9 +210,8 @@ window.onload = () => {
 
 
     document.getElementById('verIncidenciasBtn').onclick = async () => {
-        const res = await fetch('/api/incidencias');
+        const res = await fetch('/api/incidencia');
         const incidencias = await res.json();
-
         const contenedor = document.getElementById('contenidoIncidencias');
 
         if (incidencias.length === 0) {
@@ -228,6 +227,7 @@ window.onload = () => {
 
         document.getElementById('modalIncidencias').style.display = 'block';
     };
+
 
 
 

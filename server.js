@@ -180,9 +180,10 @@ app.post('/api/estado-tecnico', (req, res) => {
 
 // ──────────────── Gestión de Usuarios (Admin) ────────────────
 app.get('/api/users', (req, res) => {
-    const users = getUsers().map(({ password, ...rest }) => rest);
+    const users = getUsers().filter(u => u.role === 'usuario').map(({ password, ...rest }) => rest);
     res.json(users);
 });
+
 
 app.delete('/api/users/:username', (req, res) => {
     const username = req.params.username;
@@ -222,22 +223,27 @@ app.get('/api/logs', (req, res) => {
 });
 
 // ──────────────── Incidencias ────────────────
-app.post('/api/incidencia', (req, res) => {
-    const nuevaIncidencia = req.body;
+app.get('/api/incidencia', (req, res) => {
     const filePath = path.join(__dirname, 'data', 'incidencias.json');
 
+    if (!fs.existsSync(filePath)) {
+        return res.json([]);
+    }
+
     fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) return res.status(500).json({ message: 'Error al leer incidencias' });
+        if (err) {
+            return res.status(500).json({ message: 'Error al leer las incidencias' });
+        }
 
-        const incidencias = JSON.parse(data);
-        incidencias.push(nuevaIncidencia);
-
-        fs.writeFile(filePath, JSON.stringify(incidencias, null, 2), (err) => {
-            if (err) return res.status(500).json({ message: 'Error al guardar incidencia' });
-            res.json({ message: 'Incidencia reportada correctamente' });
-        });
+        try {
+            const incidencias = JSON.parse(data);
+            res.json(incidencias);
+        } catch (e) {
+            res.status(500).json({ message: 'Incidencias corruptas o mal formateadas' });
+        }
     });
 });
+
 
 // ──────────────── Iniciar servidor ────────────────
 app.listen(PORT, () => {
