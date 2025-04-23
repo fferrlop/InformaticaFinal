@@ -14,5 +14,29 @@
     "fecha": "2025-05-02",
     "hora": "19:40",
     "minutos": 30
+  },
+  {
+    "idCargador": 237692,
+    "estado": "Ocupado",
+    "usuario": "Francisferr",
+    "fecha": "2025-04-24",
+    "hora": "22:55",
+    "minutos": 2
+  },
+  {
+    "idCargador": 61062,
+    "estado": "Ocupado",
+    "usuario": "Francisferr",
+    "fecha": "2025-04-16",
+    "hora": "22:56",
+    "minutos": 11
+  },
+  {
+    "idCargador": 61054,
+    "estado": "Ocupado",
+    "usuario": "Francisfer",
+    "fecha": "2025-04-18",
+    "hora": "21:55",
+    "minutos": 11
   }
 ]

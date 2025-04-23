@@ -236,3 +236,55 @@ window.onload = () => {
         });
     });
 };
+
+document.getElementById('gestionarBtn').addEventListener('click', async () => {
+    const res = await fetch('/api/estados');
+    const reservas = await res.json();
+
+    const usuarioActual = localStorage.getItem('usuario');
+    const misReservas = reservas.filter(r => r.usuario === usuarioActual);
+
+    const contenedor = document.getElementById('listaReservas');
+    contenedor.innerHTML = "";
+
+    if (misReservas.length === 0) {
+        contenedor.textContent = "No tienes reservas activas.";
+    } else {
+        misReservas.forEach((r, i) => {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <p><strong>ID Cargador:</strong> ${r.idCargador}<br>
+                <strong>Fecha:</strong> ${r.fecha}<br>
+                <strong>Hora:</strong> ${r.hora}<br>
+                <strong>Duración:</strong> ${r.minutos} min</p>
+                <button class="cancelar-btn" data-id="${r.idCargador}">Cancelar</button>
+                <hr>
+            `;
+            contenedor.appendChild(div);
+        });
+    }
+
+    document.getElementById('gestionarModal').style.display = 'block';
+});
+
+document.getElementById('closeGestionar').onclick = () => {
+    document.getElementById('gestionarModal').style.display = 'none';
+};
+
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('cancelar-btn')) {
+        const id = parseInt(e.target.dataset.id);
+        const usuario = localStorage.getItem('usuario');
+
+        const res = await fetch('/api/cancelar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idCargador: id, usuario })
+        });
+
+        const data = await res.json();
+        alert(data.message || 'Reserva cancelada');
+        document.getElementById('gestionarModal').style.display = 'none';
+        location.reload();
+    }
+});
