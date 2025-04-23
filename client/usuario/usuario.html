@@ -6,10 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Leaflet CSS -->
-    <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="usuario.css">
 </head>
 <body>
@@ -17,10 +14,27 @@
 
 <div id="map"></div>
 
+<!-- MODAL RESERVA -->
+<div id="reservaModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2 id="modal-title">Título del cargador</h2>
+        <p id="modal-address">Dirección del cargador</p>
+        <p id="modal-info">Detalles técnicos u observaciones</p>
+        <button id="reservarBtn">Reservar cargador</button>
+    </div>
+</div>
+
+<!-- Perfil -->
+<div class="perfil-container">
+    <div class="perfil-icon" id="perfilIcon">👤</div>
+    <div class="perfil-menu" id="perfilMenu">
+        <button id="logoutBtn">Cerrar sesión</button>
+    </div>
+</div>
+
 <!-- Leaflet JS -->
-<script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="usuario.js"></script>
 </body>
 </html>

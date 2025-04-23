@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <title>Panel Técnico</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="tecnico.css" />
 </head>
 <body>
+<h1>Panel del Técnico</h1>
 
+<!-- Perfil de usuario -->
+<div id="perfil-container">
+    <div id="perfil-logo" onclick="toggleMenu()">
+        <img src="/client/Photos/Medalla_Faro.png" alt="Usuario" class="perfil-img" />
+    </div>
+    <div id="menu-perfil" class="perfil-menu">
+        <button onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<div id="panel-detalles" class="info-panel">
+    <h2>Detalles del Cargador</h2>
+    <p id="detalle-info">Selecciona un cargador para ver sus detalles.</p>
+
+    <label for="estadoNuevo">Actualizar Estado:</label>
+    <select id="estadoNuevo">
+        <option value="activo">Activo</option>
+        <option value="mantenimiento">Mantenimiento</option>
+        <option value="fuera_servicio">Fuera de servicio</option>
+    </select>
+    <button onclick="actualizarEstado()">Actualizar</button>
+
+    <h3>Historial de Mantenimiento</h3>
+    <ul id="historial"></ul>
+
+    <h3>Reportar Incidencia</h3>
+    <textarea id="reporte" placeholder="Describa la incidencia..."></textarea>
+    <button onclick="reportarIncidencia()">Enviar Reporte</button>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="tecnico.js"></script>
 </body>
 </html>
