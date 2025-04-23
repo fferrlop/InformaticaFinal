@@ -69,13 +69,10 @@ window.onload = () => {
         if (!cargadorSeleccionado) return;
 
         const nuevoEstado = document.getElementById("estadoNuevo").value;
-
         cargadorSeleccionado.estadoManual = nuevoEstado;
 
         const estadoActualElem = document.getElementById("estadoActual");
-        if (estadoActualElem) {
-            estadoActualElem.innerText = nuevoEstado;
-        }
+        if (estadoActualElem) estadoActualElem.innerText = nuevoEstado;
 
         alert(`Estado actualizado a "${nuevoEstado}" para el cargador ${cargadorSeleccionado.ID}`);
     };
@@ -93,21 +90,25 @@ window.onload = () => {
         document.getElementById("reporte").value = "";
     };
 
-    // Función para alternar el menú del perfil
-    window.toggleMenu = () => {
-        const menu = document.getElementById("menu-perfil");
-        if (menu.style.display === "none" || menu.style.display === "") {
-            menu.style.display = "block";
-        } else {
-            menu.style.display = "none";
-        }
-    };
+    // Menú perfil
+    const perfilIcon = document.getElementById('perfilIcon');
+    const perfilMenu = document.getElementById('perfilMenu');
 
-    // Función para cerrar sesión
-    window.cerrarSesion = () => {
+    perfilIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        perfilMenu.style.display = (perfilMenu.style.display === 'block') ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!perfilMenu.contains(e.target) && e.target !== perfilIcon) {
+            perfilMenu.style.display = 'none';
+        }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.removeItem('usuarioActivo');
-        window.location.href = '/login/login.html'; // Redirige al login
-    };
+        window.location.href = '/login/login.html';
+    });
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -117,9 +118,7 @@ window.onload = () => {
                 L.marker([latitude, longitude]).addTo(map).bindPopup("Estás aquí 🔍").openPopup();
                 cargarCargadores(latitude, longitude);
             },
-            () => {
-                cargarCargadores(defaultCoords[0], defaultCoords[1]);
-            }
+            () => cargarCargadores(defaultCoords[0], defaultCoords[1])
         );
     } else {
         cargarCargadores(defaultCoords[0], defaultCoords[1]);
